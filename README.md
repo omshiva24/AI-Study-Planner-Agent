@@ -84,9 +84,9 @@ src/
     topics.js         syllabus splitting and topic cleaning
     validation.js     server-side input validation
     dates.js          time-zone-safe date maths
-  server.js           local dev server (same handlers as Vercel)
 public/               index.html, styles.css, app.js, fonts
 tests/                node:test suites
+scripts/dev-server.js local dev server (same handlers as Vercel)
 ```
 
 ## Run locally

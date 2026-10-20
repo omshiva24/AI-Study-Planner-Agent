@@ -3,7 +3,7 @@
 
 /**
  * Local development server (no dependencies): serves public/ and the same
- * API handlers that Vercel runs. Start with: npm start → http://localhost:8080
+ * API handlers that Vercel runs. Start with: npm start (not used on Vercel) → http://localhost:8080
  */
 const http = require('http');
 const fs = require('fs');
@@ -17,8 +17,8 @@ if (fs.existsSync(envFile)) {
     if (m && process.env[m[1]] === undefined) process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
   }
 }
-const config = require('./config');
-const { handlers, SECURITY_HEADERS } = require('./http');
+const config = require('../src/config');
+const { handlers, SECURITY_HEADERS } = require('../src/http');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const TYPES = {
