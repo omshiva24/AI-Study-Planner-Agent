@@ -1,0 +1,16 @@
+{
+  "name": "ai-study-planner-agent",
+  "version": "1.0.0",
+  "description": "An AI agent that turns your syllabus and exam dates into a day-by-day study plan, checks it, and re-plans every evening. Google Gemini function calling, zero dependencies.",
+  "private": true,
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "author": "P Om Shiva (M.Tech CSE, Pondicherry University) <https://github.com/omshiva24>",
+  "license": "SEE LICENSE IN LICENSE"
+}

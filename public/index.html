@@ -1,0 +1,169 @@
+<!doctype html>
+<!-- AI Study Planner Agent · © 2026 P Om Shiva (M.Tech CSE, Pondicherry University). All rights reserved. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Study Planner Agent</title>
+    <meta
+      name="description"
+      content="An AI agent that turns your syllabus and exam dates into a day-by-day study plan, checks it, and re-plans every evening."
+    />
+    <meta name="theme-color" content="#5b2ee5" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="topbar">
+      <div class="brand">
+        <img src="/favicon.svg" alt="" width="36" height="36" />
+        <span class="brand-name">Study Planner <span class="brand-accent">Agent</span></span>
+      </div>
+      <span id="aiChip" class="chip chip-muted" hidden></span>
+    </header>
+
+    <main id="main">
+      <section id="hero" class="hero">
+        <p class="eyebrow">AI agent · Plan → Act → Check</p>
+        <h1>Your exams in.<br />A day-by-day study plan out.</h1>
+        <p class="lede">
+          Tell the agent your subjects, syllabus and exam dates. It splits the syllabus into topics, builds your calendar,
+          checks that everything fits before each exam, and re-plans every evening when life happens.
+        </p>
+        <ol class="loop" aria-label="How the agent works">
+          <li><span aria-hidden="true">🗺️</span> <strong>Plan</strong> topics and hours</li>
+          <li><span aria-hidden="true">⚡</span> <strong>Act</strong> builds your calendar</li>
+          <li><span aria-hidden="true">🔍</span> <strong>Check</strong> fixes what doesn't fit</li>
+        </ol>
+      </section>
+
+      <section id="setup" class="card" aria-labelledby="setupTitle">
+        <form id="planForm" novalidate>
+          <h2 id="setupTitle"><span class="step-num">1</span> About you</h2>
+          <div class="grid">
+            <label class="field">
+              <span>Your name <small>(optional)</small></span>
+              <input id="name" name="name" maxlength="30" autocomplete="given-name" placeholder="e.g. Om" />
+            </label>
+            <label class="field">
+              <span>Start date</span>
+              <input id="startDate" name="startDate" type="date" required />
+            </label>
+            <label class="field">
+              <span>Study time per day: <output id="hoursOut" for="hours">3 h</output></span>
+              <input id="hours" name="hours" type="range" min="1" max="10" step="0.5" value="3" />
+            </label>
+            <label class="field">
+              <span>Daily study start time</span>
+              <input id="startTime" name="startTime" type="time" value="18:00" />
+            </label>
+            <label class="field">
+              <span>Rest day</span>
+              <select id="restDay" name="restDay">
+                <option value="none">No rest day</option>
+                <option value="sun" selected>Sunday</option>
+                <option value="sat">Saturday</option>
+                <option value="mon">Monday</option>
+                <option value="tue">Tuesday</option>
+                <option value="wed">Wednesday</option>
+                <option value="thu">Thursday</option>
+                <option value="fri">Friday</option>
+              </select>
+            </label>
+          </div>
+
+          <h2><span class="step-num">2</span> Your subjects</h2>
+          <p class="hint">Paste the syllabus units or topics. The agent splits them into study topics and estimates the hours.</p>
+          <div id="subjects" class="subjects"></div>
+          <button type="button" id="addSubject" class="ghost">+ Add subject</button>
+
+          <p id="formError" class="error" role="alert" hidden></p>
+          <div class="form-actions">
+            <button type="button" id="fillExample" class="ghost">Try an example</button>
+            <button type="submit" id="planBtn" class="primary">Plan my study <span aria-hidden="true">🚀</span></button>
+          </div>
+        </form>
+      </section>
+
+      <template id="subjectTpl">
+        <fieldset class="subject">
+          <legend>Subject <span class="num"></span></legend>
+          <button type="button" class="remove" aria-label="Remove this subject">✕</button>
+          <div class="grid two">
+            <label class="field">
+              <span>Subject name</span>
+              <input class="s-name" maxlength="40" required placeholder="e.g. DBMS" />
+            </label>
+            <label class="field">
+              <span>Exam date</span>
+              <input class="s-exam" type="date" required />
+            </label>
+          </div>
+          <div class="field">
+            <span class="conf-label">How confident are you?</span>
+            <div class="seg" role="radiogroup">
+              <label><input type="radio" value="weak" /> <span>😟 Weak</span></label>
+              <label><input type="radio" value="ok" checked /> <span>🙂 OK</span></label>
+              <label><input type="radio" value="strong" /> <span>💪 Strong</span></label>
+            </div>
+          </div>
+          <label class="field">
+            <span>Syllabus (units or topics)</span>
+            <textarea class="s-syl" rows="4" maxlength="2000" placeholder="Unit 1: ER model, keys&#10;Unit 2: SQL joins, subqueries"></textarea>
+          </label>
+        </fieldset>
+      </template>
+
+      <section id="agent" class="card agent" hidden aria-labelledby="agentTitle">
+        <h2 id="agentTitle" tabindex="-1"><span aria-hidden="true">🤖</span> Agent at work</h2>
+        <ol id="steps" class="steps" aria-live="polite"></ol>
+        <p id="thinking" class="thinking"><span class="dots" aria-hidden="true"></span> <span id="thinkingText">Reading your syllabus…</span></p>
+      </section>
+
+      <section id="planView" hidden aria-labelledby="planTitle">
+        <div class="card summary">
+          <div class="summary-head">
+            <h2 id="planTitle" tabindex="-1">Your study plan</h2>
+            <span id="modeChip" class="chip"></span>
+          </div>
+          <p id="summaryText" class="summary-text"></p>
+          <ul id="tips" class="tips"></ul>
+          <div id="stats" class="stats"></div>
+          <div id="issues" class="issues"></div>
+          <div id="subjectBars" class="bars"></div>
+          <details class="steps-box">
+            <summary>See how the agent planned this</summary>
+            <ol id="planSteps" class="steps"></ol>
+          </details>
+          <div class="actions">
+            <button type="button" id="icsBtn" class="primary small">📅 Download calendar (.ics)</button>
+            <button type="button" id="printBtn" class="ghost small">🖨️ Print</button>
+            <button type="button" id="newBtn" class="ghost small">↺ New plan</button>
+          </div>
+        </div>
+
+        <div class="card checkin" id="checkin">
+          <h2><span aria-hidden="true">🌙</span> Evening check-in</h2>
+          <p>Mark today's sessions as <strong>Done</strong>, <strong>Half</strong> or <strong>Missed</strong>, then let the agent re-plan everything left from tomorrow. Sessions you don't mark count as not done.</p>
+          <button type="button" id="replanBtn" class="primary">Update my plan <span aria-hidden="true">🔁</span></button>
+          <ol id="replanSteps" class="steps" aria-live="polite" hidden></ol>
+          <p id="replanMsg" class="coach" hidden></p>
+        </div>
+
+        <div id="days" class="days"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        Built by <strong>P Om Shiva</strong> · M.Tech CSE, Pondicherry University ·
+        <a href="https://github.com/omshiva24" rel="noopener noreferrer" target="_blank">GitHub @omshiva24</a>
+      </p>
+      <p class="small-print">
+        Plans are made by AI (Google Gemini) and checked by a scheduler. Your plan is saved only in this browser. © 2026 P Om Shiva. All rights reserved.
+      </p>
+    </footer>
+  </body>
+</html>
