@@ -1,12 +1,13 @@
 # 📅 AI Study Planner Agent
 
-[![CI](https://github.com/omshiva24/ai-study-planner-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/omshiva24/ai-study-planner-agent/actions/workflows/ci.yml) ![Node 20+](https://img.shields.io/badge/node-20%2B-brightgreen) ![Dependencies: 0](https://img.shields.io/badge/dependencies-0-blue) [![License: All rights reserved](https://img.shields.io/badge/license-All%20rights%20reserved-red)](LICENSE)
+[![CI](https://github.com/omshiva24/AI-Study-Planner-Agent/actions/workflows/ci.yml/badge.svg)](https://github.com/omshiva24/AI-Study-Planner-Agent/actions/workflows/ci.yml) ![Node 20+](https://img.shields.io/badge/node-20%2B-brightgreen) ![Dependencies: 0](https://img.shields.io/badge/dependencies-0-blue) [![License: All rights reserved](https://img.shields.io/badge/license-All%20rights%20reserved-red)](LICENSE)
 
 **Your exams in. A day-by-day study plan out — and it re-plans every evening.**
 
 Type your subjects, paste the syllabus and pick the exam dates. An AI agent (Google Gemini with function calling) splits each syllabus into topics, estimates the hours, builds your calendar, **checks that everything fits before every exam**, fixes what doesn't, and explains its plan. Every evening you mark what you finished, and the agent re-plans everything that is left.
 
-**Live app:** _(link added after the first deploy)_
+**Live app:** https://ai-study-planner-agent-six.vercel.app
+**Repository:** https://github.com/omshiva24/AI-Study-Planner-Agent
 **Created by:** **P Om Shiva**, M.Tech CSE (2nd year), Pondicherry University · [GitHub @omshiva24](https://github.com/omshiva24)
 **© 2026 P Om Shiva. All rights reserved.** See [LICENSE](LICENSE).
 

@@ -102,3 +102,16 @@ test('frontend: no innerHTML, labelled inputs, no inline scripts', () => {
   assert.ok(/aria-live="polite"/.test(html), 'agent steps are announced');
   assert.ok(/class="skip"/.test(html), 'skip link');
 });
+
+test('api: Vercel-style pre-parsed bodies, including one that throws on bad JSON', async () => {
+  const { readJson } = require('../src/http');
+  assert.deepEqual(await readJson({ body: { a: 1 } }, 1000), { a: 1 });
+  assert.deepEqual(await readJson({ body: '{"b":2}' }, 1000), { b: 2 });
+  const throwing = {};
+  Object.defineProperty(throwing, 'body', {
+    get() {
+      throw new Error('Invalid JSON');
+    },
+  });
+  await assert.rejects(readJson(throwing, 1000), (err) => err.status === 400);
+});

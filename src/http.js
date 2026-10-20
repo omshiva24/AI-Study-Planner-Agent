@@ -33,13 +33,19 @@ function send(res, status, body) {
 
 /** Reads a JSON body (Vercel may have parsed it already). */
 async function readJson(req, limit) {
-  if (req.body !== undefined && req.body !== null && typeof req.body === 'object' && !Buffer.isBuffer(req.body)) {
-    if (Buffer.byteLength(JSON.stringify(req.body)) > limit) throw new AppError(413, 'TOO_LARGE', 'That is too much text. Please shorten the syllabus.');
-    return req.body;
+  let pre;
+  try {
+    pre = req.body; // Vercel parses JSON lazily and throws here on bad JSON
+  } catch {
+    throw new AppError(400, 'BAD_JSON', 'The request was not valid.');
+  }
+  if (pre !== undefined && pre !== null && typeof pre === 'object' && !Buffer.isBuffer(pre)) {
+    if (Buffer.byteLength(JSON.stringify(pre)) > limit) throw new AppError(413, 'TOO_LARGE', 'That is too much text. Please shorten the syllabus.');
+    return pre;
   }
   let raw = '';
-  if (typeof req.body === 'string' || Buffer.isBuffer(req.body)) {
-    raw = String(req.body);
+  if (typeof pre === 'string' || Buffer.isBuffer(pre)) {
+    raw = String(pre);
   } else {
     raw = await new Promise((resolve, reject) => {
       let size = 0;
